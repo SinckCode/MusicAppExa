@@ -11,7 +11,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import com.example.musicappexa.screens.HomeScreen
+import com.example.musicappexa.screens.MusicDetailScreen
+import com.example.musicappexa.ui.theme.HomeScreenRoute
 import com.example.musicappexa.ui.theme.MusicAppExaTheme
+import com.example.musicappexa.ui.theme.MusicDetailScreenRoute
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,29 +27,39 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MusicAppExaTheme {
+                val navController = rememberNavController()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    NavHost(
+                        navController = navController,
+                        startDestination = HomeScreenRoute
+                    ){
+                        composable<HomeScreenRoute>{
+                            HomeScreen(
+                                navController = navController,
+                                contentPadding = innerPadding
+                            )
+                        }
+
+                        composable<MusicDetailScreenRoute>{ backStack ->
+                            val args = backStack.toRoute<MusicDetailScreenRoute>()
+                            MusicDetailScreen(
+                                //id = args.id,
+                                contentPadding = innerPadding,
+                                navController = navController
+                            )
+                        }
+                    }
                 }
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     MusicAppExaTheme {
-        Greeting("Android")
+
     }
 }
