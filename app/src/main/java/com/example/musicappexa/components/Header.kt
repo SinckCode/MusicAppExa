@@ -26,7 +26,6 @@ import com.example.musicappexa.ui.theme.MusicAppExaTheme
 fun Header(
     navController: NavController,
     contentPadding: PaddingValues,
-    userName: String = "Onesto Frias"
 ) {
     Box(
         modifier = Modifier
@@ -74,7 +73,7 @@ fun Header(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = userName,
+                    text = "Onesto Frias",
                     color = Color.White,
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.ExtraBold
