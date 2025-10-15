@@ -28,7 +28,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             MusicAppExaTheme {
                 val navController = rememberNavController()
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    bottomBar = {
+                        com.example.musicappexa.components.Player(
+                            navController = navController,
+                            contentPadding = androidx.compose.foundation.layout.PaddingValues()
+                        )
+                    }
+
+                ) { innerPadding ->
                     NavHost(
                         navController = navController,
                         startDestination = HomeScreenRoute

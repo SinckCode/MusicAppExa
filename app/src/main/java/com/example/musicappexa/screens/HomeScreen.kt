@@ -42,12 +42,6 @@ fun HomeScreen(
             )
         }
 
-        item{
-            Player(
-                navController = navController,
-                contentPadding = contentPadding
-            )
-        }
     }
 
 }
