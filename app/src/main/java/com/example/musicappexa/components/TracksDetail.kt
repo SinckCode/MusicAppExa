@@ -26,6 +26,11 @@ import com.example.musicappexa.ui.theme.MusicAppExaTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+// Paleta negro/rojo usada en el resto
+private val Graphite = Color(0xFF1E1E22)
+private val TextDim  = Color(0xFFB3B3B6)
+private val Crimson  = Color(0xFFDC2626)
+
 @Composable
 fun TracksDetail(
     id: String,
@@ -65,7 +70,7 @@ fun TracksDetail(
                 .fillMaxWidth()
                 .height(120.dp),
             contentAlignment = Alignment.Center
-        ) { CircularProgressIndicator() }
+        ) { CircularProgressIndicator(color = Crimson) }
         return
     }
     if (error != null || album == null) {
@@ -74,7 +79,7 @@ fun TracksDetail(
                 .fillMaxWidth()
                 .height(120.dp),
             contentAlignment = Alignment.Center
-        ) { Text("Error: ${error ?: "No data"}") }
+        ) { Text("Error: ${error ?: "No data"}", color = Crimson) }
         return
     }
 
@@ -86,7 +91,7 @@ fun TracksDetail(
     Column(modifier = Modifier.fillMaxWidth()) {
         Spacer(Modifier.height(4.dp))
         tracks.forEach { trackTitle ->
-            TrackCard(
+            TrackCardDark(
                 imageUrl = a.image,
                 title = trackTitle,
                 subtitle = a.artist,
@@ -99,7 +104,7 @@ fun TracksDetail(
 }
 
 @Composable
-private fun TrackCard(
+private fun TrackCardDark(
     imageUrl: String,
     title: String,
     subtitle: String,
@@ -112,7 +117,7 @@ private fun TrackCard(
             .fillMaxWidth()
             .clip(RoundedCornerShape(18.dp)),
         shape = RoundedCornerShape(18.dp),
-        color = Color.White,
+        color = Graphite,
         tonalElevation = 0.dp,
         shadowElevation = 2.dp
     ) {
@@ -128,20 +133,24 @@ private fun TrackCard(
                 modifier = Modifier
                     .size(56.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFFEFEFEF)),
+                    .background(Color(0xFF2B2B2F)),
                 contentScale = ContentScale.Crop
             )
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
-                Text(title, style = MaterialTheme.typography.titleMedium)
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White
+                )
                 Text(
                     subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF6C6C6C)
+                    color = TextDim
                 )
             }
             IconButton(onClick = onMore) {
-                Icon(Icons.Filled.MoreVert, contentDescription = "More")
+                Icon(Icons.Filled.MoreVert, contentDescription = "More", tint = Color.White)
             }
         }
     }
@@ -149,7 +158,7 @@ private fun TrackCard(
 
 /* ================= Preview ================= */
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xFF0B0B0D)
 @Composable
 private fun TracksDetailPreview() {
     MusicAppExaTheme {

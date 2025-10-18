@@ -3,10 +3,7 @@ package com.example.musicappexa.components
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +19,11 @@ import com.example.musicappexa.services.ServiceRetrofit
 import com.example.musicappexa.ui.theme.MusicAppExaTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+
+// Paleta negro/rojo
+private val Graphite = Color(0xFF1E1E22)
+private val TextDim  = Color(0xFFB3B3B6)
+private val Crimson  = Color(0xFFDC2626)
 
 @Composable
 fun AboutDetail(
@@ -46,9 +48,7 @@ fun AboutDetail(
                     image = "https://m.media-amazon.com/images/I/51TLuWZMYeL._SY342_.jpg"
                 )
             } else {
-                withContext(Dispatchers.IO) {
-                    ServiceRetrofit.musicService.getAlbumById(id)
-                }
+                withContext(Dispatchers.IO) { ServiceRetrofit.musicService.getAlbumById(id) }
             }
         } catch (e: Exception) {
             error = e.message ?: "Network error"
@@ -65,7 +65,7 @@ fun AboutDetail(
                 .padding(horizontal = 16.dp)
                 .height(120.dp),
             contentAlignment = Alignment.Center
-        ) { CircularProgressIndicator() }
+        ) { CircularProgressIndicator(color = Crimson) }
         return
     }
     if (error != null || album == null) {
@@ -75,23 +75,20 @@ fun AboutDetail(
                 .padding(horizontal = 16.dp)
                 .height(120.dp),
             contentAlignment = Alignment.Center
-        ) { Text("Error: ${error ?: "No data"}") }
+        ) { Text("Error: ${error ?: "No data"}", color = Crimson) }
         return
     }
 
     val a = album!!
-    val DeepPurple = Color(0xFF2E1646)
 
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        // Card blanca con sombra suave
+    Column(modifier = Modifier.fillMaxWidth()) {
+        // Card oscura con sombra suave
         Surface(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth(),
             shape = RoundedCornerShape(18.dp),
-            color = Color.White,
+            color = Graphite,
             tonalElevation = 0.dp,
             shadowElevation = 6.dp
         ) {
@@ -99,23 +96,25 @@ fun AboutDetail(
                 Text(
                     "About this album",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
                     a.description,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF424242)
+                    color = TextDim
                 )
             }
         }
 
         Spacer(Modifier.height(12.dp))
 
+        // Chip de artista (una sola píldora)
         Surface(
             modifier = Modifier.padding(horizontal = 16.dp),
             shape = RoundedCornerShape(50),
-            color = Color.White,
+            color = Graphite,
             tonalElevation = 0.dp,
             shadowElevation = 2.dp
         ) {
@@ -127,14 +126,14 @@ fun AboutDetail(
                     "Artist:",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = DeepPurple,
+                    color = Crimson,
                     maxLines = 1
                 )
                 Spacer(Modifier.width(6.dp))
                 Text(
                     a.artist,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF424242),
+                    color = Color.White,
                     maxLines = 1
                 )
             }
@@ -143,7 +142,7 @@ fun AboutDetail(
 }
 
 /* ============ Preview ============ */
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xFF0B0B0D)
 @Composable
 private fun AboutDetailPreview() {
     MusicAppExaTheme {

@@ -2,6 +2,7 @@ package com.example.musicappexa.components
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,6 +25,12 @@ import com.example.musicappexa.services.ServiceRetrofit
 import com.example.musicappexa.ui.theme.MusicDetailScreenRoute
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+
+// Paleta rojo/negro (mueve a Theme.kt si prefieres)
+private val JetBlack  = Color(0xFF0B0B0D)
+private val Graphite  = Color(0xFF1E1E22)
+private val TextDim   = Color(0xFFB3B3B6)
+private val Crimson   = Color(0xFFDC2626)
 
 @Composable
 fun RecentlyPlayed(
@@ -64,16 +71,25 @@ fun RecentlyPlayed(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("Recently Played", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-        Text("See more", style = MaterialTheme.typography.bodyMedium, color = Color(0xFF6D50FF))
+        Text(
+            "Recently Played",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.ExtraBold,
+            color = Color.White
+        )
+        Text(
+            "See more",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Crimson
+        )
     }
 
     when {
-        loading -> Row(Modifier.padding(16.dp)) { CircularProgressIndicator() }
-        error != null -> Text("Error: $error", color = Color.Red, modifier = Modifier.padding(16.dp))
+        loading -> Row(Modifier.padding(16.dp)) { CircularProgressIndicator(color = Crimson) }
+        error != null -> Text("Error: $error", color = Crimson, modifier = Modifier.padding(16.dp))
         else -> Column {
             items.forEach { track ->
-                RecentlyPlayedItem(
+                RecentlyPlayedItemDark(
                     title = track.title,
                     artist = track.artist,
                     imageUrl = track.image,
@@ -86,7 +102,7 @@ fun RecentlyPlayed(
 }
 
 @Composable
-private fun RecentlyPlayedItem(
+private fun RecentlyPlayedItemDark(
     title: String,
     artist: String,
     imageUrl: String,
@@ -97,8 +113,9 @@ private fun RecentlyPlayedItem(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clip(RoundedCornerShape(20.dp))
-            .background(Color.White)
-            .padding(12.dp),
+            .background(Graphite)
+            .padding(12.dp)
+            .clickable(onClick = onClickMore),
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
@@ -111,12 +128,25 @@ private fun RecentlyPlayedItem(
         )
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
-            Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold,
-                maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(
+                title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
             Spacer(Modifier.height(2.dp))
-            Text("$artist • Popular Song", style = MaterialTheme.typography.bodySmall, color = Color(0xFF6C6C6C),
-                maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(
+                "$artist • Popular Song",
+                style = MaterialTheme.typography.bodySmall,
+                color = TextDim,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
-        IconButton(onClick = onClickMore) { Icon(Icons.Filled.MoreVert, contentDescription = "More") }
+        IconButton(onClick = onClickMore) {
+            Icon(Icons.Filled.MoreVert, contentDescription = "More", tint = Color.White)
+        }
     }
 }

@@ -31,6 +31,11 @@ import com.example.musicappexa.ui.theme.MusicAppExaTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+// Paleta negro/rojo
+private val JetBlack  = Color(0xFF0B0B0D)
+private val NearBlack = Color(0xFF151518)
+private val Crimson   = Color(0xFFDC2626)
+
 @Composable
 fun HeaderDetail(
     id: String,
@@ -54,9 +59,7 @@ fun HeaderDetail(
                     image = "https://i.imgur.com/XzY5R1x.jpg"
                 )
             } else {
-                withContext(Dispatchers.IO) {
-                    ServiceRetrofit.musicService.getAlbumById(id)
-                }
+                withContext(Dispatchers.IO) { ServiceRetrofit.musicService.getAlbumById(id) }
             }
         } catch (e: Exception) {
             error = e.message ?: "Network error"
@@ -72,7 +75,7 @@ fun HeaderDetail(
                 .fillMaxWidth()
                 .height(360.dp),
             contentAlignment = Alignment.Center
-        ) { CircularProgressIndicator() }
+        ) { CircularProgressIndicator(color = Crimson) }
         return
     }
     if (error != null || album == null) {
@@ -81,15 +84,11 @@ fun HeaderDetail(
                 .fillMaxWidth()
                 .height(360.dp),
             contentAlignment = Alignment.Center
-        ) { Text("Error: ${error ?: "No data"}") }
+        ) { Text("Error: ${error ?: "No data"}", color = Crimson) }
         return
     }
 
     val a = album!!
-    val DeepPurple = Color(0xFF2E1646)
-    val AccentPurple = Color(0xFF6A4AFF)
-
-    // --- estado del único botón (play/pause) ---
     var isPlaying by rememberSaveable(a.id) { mutableStateOf(false) }
 
     Box(
@@ -99,7 +98,7 @@ fun HeaderDetail(
             .height(360.dp)
             .clip(RoundedCornerShape(26.dp))
     ) {
-        // portada
+        // Portada
         AsyncImage(
             model = a.image,
             contentDescription = a.title,
@@ -107,20 +106,20 @@ fun HeaderDetail(
             contentScale = ContentScale.Crop
         )
 
-        // gradiente más marcado abajo para contraste
+        // Overlay para contraste (ligero rojo → negro profundo)
         Box(
             modifier = Modifier
                 .matchParentSize()
                 .background(
                     Brush.verticalGradient(
                         0f to Color.Transparent,
-                        0.55f to DeepPurple.copy(alpha = 0.40f),
-                        1f to DeepPurple.copy(alpha = 0.85f)
+                        0.45f to Crimson.copy(alpha = 0.35f),
+                        1f to NearBlack.copy(alpha = 0.90f)
                     )
                 )
         )
 
-        // barra superior
+        // Barra superior
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -136,7 +135,7 @@ fun HeaderDetail(
             }
         }
 
-        // textos + ÚNICO botón con estado
+        // Títulos + botón único
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
@@ -154,12 +153,9 @@ fun HeaderDetail(
             )
             Spacer(Modifier.height(12.dp))
 
-            val container =
-                if (isPlaying) Color.White else AccentPurple
-            val iconTint =
-                if (isPlaying) DeepPurple else Color.White
-
-
+            // Botón único (rojo↔blanco)
+            val container = if (isPlaying) Crimson else Color.White
+            val iconTint  = if (isPlaying) Color.White else Crimson
 
             FilledIconButton(
                 onClick = { isPlaying = !isPlaying },
@@ -178,8 +174,7 @@ fun HeaderDetail(
 }
 
 /* ===== Preview ===== */
-
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xFF0B0B0D)
 @Composable
 private fun HeaderDetailPreview() {
     MusicAppExaTheme {

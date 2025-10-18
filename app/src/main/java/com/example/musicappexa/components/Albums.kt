@@ -33,6 +33,13 @@ import com.example.musicappexa.ui.theme.MusicDetailScreenRoute
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+// Paleta dark rojo/negro (puedes mover a Theme.kt)
+private val JetBlack  = Color(0xFF0B0B0D)
+private val NearBlack = Color(0xFF151518)
+private val Graphite  = Color(0xFF1E1E22)
+private val BloodRed  = Color(0xFFB71C1C)
+private val Crimson   = Color(0xFFDC2626)
+
 @Composable
 fun Albums(
     navController: NavController,
@@ -46,7 +53,6 @@ fun Albums(
     LaunchedEffect(Unit) {
         try {
             albums = if (isPreview) {
-                // Datos para Preview (sin red)
                 listOf(
                     Music(
                         title = "Tales of Ithiria",
@@ -59,15 +65,12 @@ fun Albums(
                         title = "Awake",
                         artist = "Avenged Sevenfold",
                         description = "",
-                        image = "https://m.media-amazon.com/images/I/41o5xwkxupL._SX342_SY445_ControlCacheEqualizer_.jpg",
+                        image = "https://m.media-amazon.com/images/I/41o5xwkxupL._SX342_SY445_.jpg",
                         id = "2"
                     )
                 )
             } else {
-                // Llamada directa a Retrofit
-                withContext(Dispatchers.IO) {
-                    ServiceRetrofit.musicService.getAllAlbums()
-                }
+                withContext(Dispatchers.IO) { ServiceRetrofit.musicService.getAllAlbums() }
             }
         } catch (e: Exception) {
             error = e.message
@@ -77,7 +80,7 @@ fun Albums(
         }
     }
 
-    // Header
+    // Encabezado
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -85,18 +88,23 @@ fun Albums(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("Albums", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+        Text(
+            "Albums",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.ExtraBold,
+            color = Color.White
+        )
         Text(
             "See more",
             style = MaterialTheme.typography.bodyMedium,
-            color = Color(0xFF6D50FF),
+            color = Crimson,
             modifier = Modifier.clickable { /* TODO: navegar a listado */ }
         )
     }
 
     when {
-        loading -> Row(Modifier.padding(16.dp)) { CircularProgressIndicator() }
-        error != null -> Text("Error: $error", color = Color.Red, modifier = Modifier.padding(16.dp))
+        loading -> Row(Modifier.padding(16.dp)) { CircularProgressIndicator(color = Crimson) }
+        error != null -> Text("Error: $error", color = Crimson, modifier = Modifier.padding(16.dp))
         else -> LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -105,7 +113,7 @@ fun Albums(
             contentPadding = PaddingValues(end = 8.dp)
         ) {
             items(albums) { a ->
-                AlbumCard(
+                AlbumCardDark(
                     title = a.title,
                     artist = a.artist,
                     imageUrl = a.image,
@@ -117,44 +125,58 @@ fun Albums(
 }
 
 @Composable
-private fun AlbumCard(
+private fun AlbumCardDark(
     title: String,
     artist: String,
     imageUrl: String,
     onClick: () -> Unit
 ) {
+    // Tarjeta oscura con overlay rojo→negro y botón Play rojo
     Box(
         modifier = Modifier
             .width(220.dp)
             .clip(RoundedCornerShape(22.dp))
-            .background(Color.White)
+            .background(Graphite) // borde y marco oscuro
             .clickable { onClick() }
-            .padding(12.dp)
     ) {
+        // Portada
         AsyncImage(
             model = imageUrl,
             contentDescription = title,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(170.dp)
-                .clip(RoundedCornerShape(16.dp)),
+                .clip(RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp)),
             contentScale = ContentScale.Crop
         )
 
+        // Overlay para legibilidad del texto (de rojo sutil a negro)
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .fillMaxWidth()
+                .height(88.dp)
+                .clip(RoundedCornerShape(bottomStart = 22.dp, bottomEnd = 22.dp))
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            BloodRed.copy(alpha = 0.35f),
+                            NearBlack.copy(alpha = 0.92f)
+                        )
+                    )
+                )
+        )
+
+        // Contenido inferior (título, artista, play)
         Row(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(12.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(
-                    Brush.verticalGradient(
-                        listOf(Color(0x992E1646), Color(0xCC2E1646))
-                    )
-                )
-                .padding(horizontal = 14.dp, vertical = 10.dp),
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(Modifier.widthIn(max = 150.dp)) {
+            Column(Modifier.weight(1f)) {
                 Text(
                     title,
                     color = Color.White,
@@ -165,33 +187,37 @@ private fun AlbumCard(
                 )
                 Text(
                     artist,
-                    color = Color.White.copy(alpha = .9f),
+                    color = Color.White.copy(alpha = .85f),
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            Spacer(Modifier.width(8.dp))
-            Surface(
-                modifier = Modifier.size(34.dp),
+            Spacer(Modifier.width(10.dp))
+            FilledIconButton(
+                onClick = onClick,
                 shape = CircleShape,
-                color = Color.White
+                colors = IconButtonDefaults.filledIconButtonColors(containerColor = Crimson)
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(Icons.Filled.PlayArrow, contentDescription = "Play", tint = Color(0xFF2E1646))
-                }
+                Icon(Icons.Filled.PlayArrow, contentDescription = "Play", tint = Color.White)
             }
         }
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFF3ECFF)
+@Preview(showBackground = true, backgroundColor = 0xFF0B0B0D, showSystemUi = true)
 @Composable
 fun AlbumsPreview() {
     MusicAppExaTheme {
-        Albums(
-            navController = rememberNavController(),
-            contentPadding = PaddingValues(0.dp)
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(JetBlack)
+        ) {
+            Albums(
+                navController = rememberNavController(),
+                contentPadding = PaddingValues(0.dp)
+            )
+        }
     }
 }
