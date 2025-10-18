@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                         composable<MusicDetailScreenRoute>{ backStack ->
                             val args = backStack.toRoute<MusicDetailScreenRoute>()
                             MusicDetailScreen(
-                                //id = args.id,
+                                id = args.id,
                                 contentPadding = innerPadding,
                                 navController = navController
                             )
